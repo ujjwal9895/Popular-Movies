@@ -12,6 +12,10 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,11 +23,16 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class MainActivityFragment extends Fragment {
+
+    private ArrayList<String> moviePosterPaths;
+
+    private ImageAdapter imageAdapter;
 
     public MainActivityFragment() {
     }
@@ -34,8 +43,13 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
+        moviePosterPaths = new ArrayList<String>();
+        imageAdapter = new ImageAdapter(getActivity(),moviePosterPaths);
+        FetchMovies fetchMovies = new FetchMovies();
+        fetchMovies.execute();
+
         GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
-        gridView.setAdapter(new ImageAdapter(getActivity()));
+        gridView.setAdapter(imageAdapter);
 
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -44,22 +58,20 @@ public class MainActivityFragment extends Fragment {
             }
         });
 
-        FetchMovies fetchMovies = new FetchMovies();
-        fetchMovies.execute();
-
         return rootView;
     }
 
-    public class FetchMovies extends AsyncTask<Void, Void, Void> {
+    public class FetchMovies extends AsyncTask<Void, Void, ArrayList<String>> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected ArrayList<String> doInBackground(Void... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader bufferedReader = null;
             String movieJsonString;
+            ArrayList<String> moviesPoster;
 
             try {
 
@@ -99,6 +111,8 @@ public class MainActivityFragment extends Fragment {
 
                 Log.v(LOG_TAG, movieJsonString);
 
+                moviesPoster = getMoviesFromJson(movieJsonString);
+
             }catch (IOException e) {
 
                 Log.e(LOG_TAG, "Error closing stream", e);
@@ -120,11 +134,27 @@ public class MainActivityFragment extends Fragment {
                     try {
                         bufferedReader.close();
                     }catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
+                        Log.e(LOG_TAG, "Error closing reader", e);
                     }
                 }
             }
-            return null;
+
+            return moviesPoster;
+        }
+
+        private ArrayList<String> getMoviesFromJson(String movieJson) throws JSONException {
+
+            ArrayList<String> moviesList = new ArrayList<String>();
+            JSONObject movies = new JSONObject(movieJson);
+            JSONArray movieArray = movies.getJSONArray("results");
+
+            for (int i = 0; i < movieArray.length(); i++) {
+
+                JSONObject singleMovie = movieArray.getJSONObject(i);
+                moviesList.add(singleMovie.getString("poster_path"));
+
+            }
+            return moviesList;
         }
 
         @Override
@@ -133,8 +163,11 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
+        protected void onPostExecute(ArrayList<String> moviePosterArray) {
+
+            moviePosterPaths.addAll(moviePosterArray);
+            imageAdapter.notifyDataSetChanged();
+
         }
     }
 }
