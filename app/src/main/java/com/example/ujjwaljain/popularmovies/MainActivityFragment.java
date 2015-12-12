@@ -1,5 +1,6 @@
 package com.example.ujjwaljain.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ public class MainActivityFragment extends Fragment {
     private ArrayList<String> moviePosterPaths;
     private String sortOrder;
     private ImageAdapter imageAdapter;
+    private String movieJsonString;
 
     public MainActivityFragment() {
     }
@@ -73,6 +75,7 @@ public class MainActivityFragment extends Fragment {
             return true;
 
         }
+
         return super.onOptionsItemSelected(item);
 
     }
@@ -102,7 +105,12 @@ public class MainActivityFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(getActivity(), "" + position, Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(getActivity(), DetailActivity.class);
+                intent.putExtra("Json String", movieJsonString);
+                intent.putExtra("Position", position);
+                startActivity(intent);
+
             }
         });
 
@@ -118,7 +126,7 @@ public class MainActivityFragment extends Fragment {
 
             HttpURLConnection urlConnection = null;
             BufferedReader bufferedReader = null;
-            String movieJsonString;
+
             ArrayList<String> moviesPoster;
 
             try {
@@ -127,7 +135,7 @@ public class MainActivityFragment extends Fragment {
 
                 Uri uri = Uri.parse(base_URL).buildUpon()
                         .appendQueryParameter("sort_by", sortOrder)
-                        .appendQueryParameter("api_key",BuildConfig.MOVIE_DB_API_KEY)
+                        .appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY)
                         .build();
 
                 URL url = new URL(uri.toString());
