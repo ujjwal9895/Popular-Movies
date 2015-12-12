@@ -16,20 +16,20 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="215dp"
+        android:layout_height="@dimen/backdrop_height"
         android:id="@+id/backdrop"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:src="#D1C4E9"/>
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="120dp"
+        android:layout_width="@dimen/poster_width"
+        android:layout_height="@dimen/poster_height"
         android:id="@+id/poster"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="200dp"
-        android:layout_marginLeft="20dp"
+        android:layout_marginTop="@dimen/poster_margin"
+        android:layout_marginLeft="@dimen/default_margin"
         android:src="#9575CD"/>
 
     <TextView
@@ -39,12 +39,12 @@
         android:text="Ant - Man"
         android:layout_below="@+id/backdrop"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginEnd="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
         android:layout_toRightOf="@+id/poster"
         android:layout_toEndOf="@+id/poster"
-        android:layout_marginLeft="20dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginStart="@dimen/default_margin"
         android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
 
     <TextView
@@ -66,7 +66,7 @@
         android:layout_marginTop="-8dp"
         android:layout_toEndOf="@+id/poster"
         android:layout_toRightOf="@+id/poster"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="@dimen/default_margin"
         android:orientation="horizontal">
 
             <TextView
@@ -100,8 +100,8 @@
         android:layout_below="@+id/rating_layout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
         android:gravity="center"
         android:lineSpacingMultiplier="1.15"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>

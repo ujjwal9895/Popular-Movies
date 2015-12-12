@@ -54,18 +54,17 @@ public class ImageAdapter extends BaseAdapter {
         if (convertView == null)
         {
             imageView = new ImageView(mContext);
-         //   imageView.setLayoutParams(new GridView.LayoutParams
-           //         (ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
             imageView.setAdjustViewBounds(true);
-            //imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         }
         else {
             imageView = (ImageView) convertView;
         }
 
+        String posterURL = "http://image.tmdb.org/t/p/w342/" + moviePathArr.get(position).moviePath;
+
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w342/" + moviePathArr.get(position).moviePath)
+                .load(posterURL)
                 .placeholder(R.drawable.empty_photo)
                 .into(imageView);
 

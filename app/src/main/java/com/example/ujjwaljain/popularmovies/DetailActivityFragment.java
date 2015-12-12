@@ -22,7 +22,7 @@ public class DetailActivityFragment extends Fragment {
 
     private String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
-    private String[] paths;
+    private String[] movieDetails;
 
     public DetailActivityFragment() {
     }
@@ -40,13 +40,13 @@ public class DetailActivityFragment extends Fragment {
         Log.v(LOG_TAG, "" + position);
 
         try {
-            paths = getImagePathsFromJson(movieJson, position);
+            movieDetails = getImagePathsFromJson(movieJson, position);
         } catch (Exception e) {
             Log.e(LOG_TAG, "Error getting string", e);
         }
 
-        String posterUrl = "http://image.tmdb.org/t/p/w342/" + paths[0];
-        String backdropUrl = "http://image.tmdb.org/t/p/w342/" + paths[1];
+        String posterUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[0];
+        String backdropUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[1];
 
         ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
         ImageView backdropImageView = (ImageView) rootView.findViewById(R.id.backdrop);
@@ -66,10 +66,10 @@ public class DetailActivityFragment extends Fragment {
         TextView ratingTextView = (TextView) rootView.findViewById(R.id.rating);
         TextView overviewTextView = (TextView) rootView.findViewById(R.id.movie_overview);
 
-        titleTextView.setText(paths[2]);
-        releaseDateTextView.setText(paths[3]);
-        ratingTextView.setText(paths[4]);
-        overviewTextView.setText(paths[5]);
+        titleTextView.setText(movieDetails[2]);
+        releaseDateTextView.setText(movieDetails[3]);
+        ratingTextView.setText(movieDetails[4]);
+        overviewTextView.setText(movieDetails[5]);
 
         return rootView;
     }

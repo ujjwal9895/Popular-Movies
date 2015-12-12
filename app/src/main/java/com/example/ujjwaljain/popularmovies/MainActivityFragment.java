@@ -38,6 +38,9 @@ public class MainActivityFragment extends Fragment {
     private String sortOrder;
     private ImageAdapter imageAdapter;
     private String movieJsonString;
+    private final String STATE_MOVIES = "state_movies";
+    private final String SORT_CRITERIA = "sort_criteria";
+    private final String SAVED_STRING = "json_string";
 
     public MainActivityFragment() {
     }
@@ -48,18 +51,18 @@ public class MainActivityFragment extends Fragment {
         sortOrder = "popularity.desc";
         setHasOptionsMenu(true);
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("state_movies")) {
-            moviePosterPaths = savedInstanceState.getParcelableArrayList("state_movies");
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_MOVIES)) {
+            moviePosterPaths = savedInstanceState.getParcelableArrayList(STATE_MOVIES);
         } else {
             moviePosterPaths = new ArrayList<>();
         }
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("sort_criteria")) {
-            sortOrder = savedInstanceState.getString("sort_criteria");
+        if (savedInstanceState != null && savedInstanceState.containsKey(SORT_CRITERIA)) {
+            sortOrder = savedInstanceState.getString(SORT_CRITERIA);
         }
 
-        if (savedInstanceState != null && savedInstanceState.containsKey("json_string")) {
-            movieJsonString = savedInstanceState.getString("json_string");
+        if (savedInstanceState != null && savedInstanceState.containsKey(SAVED_STRING)) {
+            movieJsonString = savedInstanceState.getString(SAVED_STRING);
         }
     }
 
@@ -139,9 +142,9 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("state_movies", moviePosterPaths);
-        outState.putString("sort_criteria", sortOrder);
-        outState.putString("json_string",movieJsonString);
+        outState.putParcelableArrayList(STATE_MOVIES, moviePosterPaths);
+        outState.putString(SORT_CRITERIA, sortOrder);
+        outState.putString(SAVED_STRING, movieJsonString);
     }
 
     public class FetchMovies extends AsyncTask<Void, Void, ArrayList<Movie>> {
