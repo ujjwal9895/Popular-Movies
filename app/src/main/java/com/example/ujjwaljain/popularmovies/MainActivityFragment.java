@@ -6,6 +6,9 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -31,10 +34,55 @@ import java.util.ArrayList;
 public class MainActivityFragment extends Fragment {
 
     private ArrayList<String> moviePosterPaths;
-
+    private String sortOrder;
     private ImageAdapter imageAdapter;
 
     public MainActivityFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sortOrder = "popularity.desc";
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if (id == R.id.action_sort_popularity) {
+
+            sortOrder = "popularity.desc";
+            updateMovies();
+            return true;
+
+        }
+
+        if (id == R.id.action_sort_rating) {
+
+            sortOrder = "vote_average.desc";
+            updateMovies();
+            return true;
+
+        }
+        return super.onOptionsItemSelected(item);
+
+    }
+
+    public void updateMovies() {
+
+        moviePosterPaths.clear();
+        FetchMovies fetchMovies = new FetchMovies();
+        fetchMovies.execute();
+
     }
 
     @Override
@@ -45,8 +93,8 @@ public class MainActivityFragment extends Fragment {
 
         moviePosterPaths = new ArrayList<String>();
         imageAdapter = new ImageAdapter(getActivity(),moviePosterPaths);
-        FetchMovies fetchMovies = new FetchMovies();
-        fetchMovies.execute();
+
+        updateMovies();
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
         gridView.setAdapter(imageAdapter);
@@ -78,7 +126,7 @@ public class MainActivityFragment extends Fragment {
                 String base_URL = "http://api.themoviedb.org/3/discover/movie?";
 
                 Uri uri = Uri.parse(base_URL).buildUpon()
-                        .appendQueryParameter("sort_by", "popularity.desc")
+                        .appendQueryParameter("sort_by", sortOrder)
                         .appendQueryParameter("api_key",BuildConfig.MOVIE_DB_API_KEY)
                         .build();
 
