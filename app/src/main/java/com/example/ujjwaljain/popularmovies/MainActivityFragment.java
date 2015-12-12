@@ -34,7 +34,7 @@ import java.util.ArrayList;
  */
 public class MainActivityFragment extends Fragment {
 
-    private ArrayList<String> moviePosterPaths;
+    private ArrayList<Movie> moviePosterPaths;
     private String sortOrder;
     private ImageAdapter imageAdapter;
     private String movieJsonString;
@@ -47,6 +47,20 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         sortOrder = "popularity.desc";
         setHasOptionsMenu(true);
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("state_movies")) {
+            moviePosterPaths = savedInstanceState.getParcelableArrayList("state_movies");
+        } else {
+            moviePosterPaths = new ArrayList<>();
+        }
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("sort_criteria")) {
+            sortOrder = savedInstanceState.getString("sort_criteria");
+        }
+
+        if (savedInstanceState != null && savedInstanceState.containsKey("json_string")) {
+            movieJsonString = savedInstanceState.getString("json_string");
+        }
     }
 
     @Override
@@ -80,6 +94,14 @@ public class MainActivityFragment extends Fragment {
 
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (moviePosterPaths.isEmpty()) {
+            updateMovies();
+        }
+    }
+
     public void updateMovies() {
 
         moviePosterPaths.clear();
@@ -94,10 +116,7 @@ public class MainActivityFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        moviePosterPaths = new ArrayList<String>();
         imageAdapter = new ImageAdapter(getActivity(),moviePosterPaths);
-
-        updateMovies();
 
         GridView gridView = (GridView) rootView.findViewById(R.id.gridView);
         gridView.setAdapter(imageAdapter);
@@ -117,17 +136,25 @@ public class MainActivityFragment extends Fragment {
         return rootView;
     }
 
-    public class FetchMovies extends AsyncTask<Void, Void, ArrayList<String>> {
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("state_movies", moviePosterPaths);
+        outState.putString("sort_criteria", sortOrder);
+        outState.putString("json_string",movieJsonString);
+    }
+
+    public class FetchMovies extends AsyncTask<Void, Void, ArrayList<Movie>> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
         @Override
-        protected ArrayList<String> doInBackground(Void... params) {
+        protected ArrayList<Movie> doInBackground(Void... params) {
 
             HttpURLConnection urlConnection = null;
             BufferedReader bufferedReader = null;
 
-            ArrayList<String> moviesPoster;
+            ArrayList<Movie> moviesPoster;
 
             try {
 
@@ -165,8 +192,6 @@ public class MainActivityFragment extends Fragment {
 
                 movieJsonString = stringBuffer.toString();
 
-                Log.v(LOG_TAG, movieJsonString);
-
                 moviesPoster = getMoviesFromJson(movieJsonString);
 
             }catch (IOException e) {
@@ -198,16 +223,16 @@ public class MainActivityFragment extends Fragment {
             return moviesPoster;
         }
 
-        private ArrayList<String> getMoviesFromJson(String movieJson) throws JSONException {
+        private ArrayList<Movie> getMoviesFromJson(String movieJson) throws JSONException {
 
-            ArrayList<String> moviesList = new ArrayList<String>();
+            ArrayList<Movie> moviesList = new ArrayList<Movie>();
             JSONObject movies = new JSONObject(movieJson);
             JSONArray movieArray = movies.getJSONArray("results");
 
             for (int i = 0; i < movieArray.length(); i++) {
 
                 JSONObject singleMovie = movieArray.getJSONObject(i);
-                moviesList.add(singleMovie.getString("poster_path"));
+                moviesList.add(new Movie(singleMovie.getString("poster_path")));
 
             }
             return moviesList;
@@ -219,7 +244,7 @@ public class MainActivityFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<String> moviePosterArray) {
+        protected void onPostExecute(ArrayList<Movie> moviePosterArray) {
 
             moviePosterPaths.addAll(moviePosterArray);
             imageAdapter.notifyDataSetChanged();

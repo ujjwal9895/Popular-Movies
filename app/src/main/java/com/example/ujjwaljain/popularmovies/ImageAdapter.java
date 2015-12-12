@@ -17,26 +17,26 @@ public class ImageAdapter extends BaseAdapter {
 
     private final String LOG_TAG = ImageAdapter.class.getSimpleName();
 
-    private ArrayList<String> moviePath;
+    private ArrayList<Movie> moviePathArr;
 
     private Context mContext;
 
-    public ImageAdapter(Context c, ArrayList<String> m)
+    public ImageAdapter(Context c, ArrayList<Movie> m)
     {
         mContext = c;
-        moviePath = m;
+        moviePathArr = m;
     }
 
     @Override
     public int getCount() {
-        return moviePath.size();
+        return moviePathArr.size();
     }
 
     @Override
     public Object getItem(int position)
     {
-        if (position >= 0 && position < moviePath.size())
-            return moviePath.get(position);
+        if (position >= 0 && position < moviePathArr.size())
+            return moviePathArr.get(position);
 
         return null;
     }
@@ -64,9 +64,8 @@ public class ImageAdapter extends BaseAdapter {
             imageView = (ImageView) convertView;
         }
 
-        Log.v(LOG_TAG, "http://image.tmdb.org/t/p/w342/" + moviePath.get(position));
         Picasso.with(mContext)
-                .load("http://image.tmdb.org/t/p/w342/" + moviePath.get(position))
+                .load("http://image.tmdb.org/t/p/w342/" + moviePathArr.get(position).moviePath)
                 .placeholder(R.drawable.empty_photo)
                 .into(imageView);
 
