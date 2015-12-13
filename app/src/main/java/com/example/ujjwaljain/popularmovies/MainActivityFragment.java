@@ -1,5 +1,6 @@
 package com.example.ujjwaljain.popularmovies;
 
+import android.app.DownloadManager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -28,6 +29,12 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
+
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -154,8 +161,7 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected ArrayList<Movie> doInBackground(Void... params) {
 
-            HttpURLConnection urlConnection = null;
-            BufferedReader bufferedReader = null;
+            OkHttpClient client = new OkHttpClient();
 
             ArrayList<Movie> moviesPoster;
 
@@ -170,30 +176,15 @@ public class MainActivityFragment extends Fragment {
 
                 URL url = new URL(uri.toString());
 
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
 
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer stringBuffer = new StringBuffer();
+                Response response = client.newCall(request).execute();
 
-                if (inputStream == null) {
-                    return null;
-                }
+                movieJsonString = response.body().string();
 
-                bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-
-                while ((line = bufferedReader.readLine()) != null) {
-                    stringBuffer.append(line + "\n");
-                }
-
-                if (stringBuffer.length() == 0) {
-                    return null;
-                }
-
-                movieJsonString = stringBuffer.toString();
+                Log.v(LOG_TAG, "Json string" + movieJsonString);
 
                 moviesPoster = getMoviesFromJson(movieJsonString);
 
@@ -207,20 +198,6 @@ public class MainActivityFragment extends Fragment {
                 Log.e(LOG_TAG, "Error occurred", e);
                 return null;
 
-            }
-            finally {
-
-                if (urlConnection != null)
-                    urlConnection.disconnect();
-
-                if (bufferedReader != null)
-                {
-                    try {
-                        bufferedReader.close();
-                    }catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing reader", e);
-                    }
-                }
             }
 
             return moviesPoster;
