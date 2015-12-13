@@ -29,7 +29,7 @@ public class Movie implements Parcelable {
         dest.writeString(moviePath);
     }
 
-    public final Parcelable.Creator<Movie> MOVIE = new Parcelable.Creator<Movie>(){
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>(){
         @Override
         public Movie createFromParcel(Parcel source) {
             return new Movie(source);

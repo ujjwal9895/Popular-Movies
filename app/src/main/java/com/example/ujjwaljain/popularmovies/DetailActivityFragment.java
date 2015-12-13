@@ -36,9 +36,6 @@ public class DetailActivityFragment extends Fragment {
         String movieJson = getActivity().getIntent().getExtras().getString("Json String");
         int position = getActivity().getIntent().getExtras().getInt("Position");
 
-        Log.v(LOG_TAG, movieJson);
-        Log.v(LOG_TAG, "" + position);
-
         try {
             movieDetails = getImagePathsFromJson(movieJson, position);
         } catch (Exception e) {

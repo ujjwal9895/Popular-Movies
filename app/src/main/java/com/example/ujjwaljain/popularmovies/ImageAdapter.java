@@ -35,10 +35,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public Object getItem(int position)
     {
-        if (position >= 0 && position < moviePathArr.size())
-            return moviePathArr.get(position);
-
-        return null;
+        return moviePathArr.get(position);
     }
 
     @Override

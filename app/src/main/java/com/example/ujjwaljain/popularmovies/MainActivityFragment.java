@@ -1,7 +1,12 @@
 package com.example.ujjwaljain.popularmovies;
 
+import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
@@ -55,6 +60,22 @@ public class MainActivityFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (!isOnline(getActivity())) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+            alertDialog.setMessage("Internet Connectivity Problem");
+            alertDialog.setTitle("No Internet");
+            alertDialog.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            getActivity().finish();
+                        }
+                    });
+            alertDialog.setCancelable(true);
+            alertDialog.create().show();
+        }
+
         sortOrder = "popularity.desc";
         setHasOptionsMenu(true);
 
@@ -184,8 +205,6 @@ public class MainActivityFragment extends Fragment {
 
                 movieJsonString = response.body().string();
 
-                Log.v(LOG_TAG, "Json string" + movieJsonString);
-
                 moviesPoster = getMoviesFromJson(movieJsonString);
 
             }catch (IOException e) {
@@ -226,9 +245,38 @@ public class MainActivityFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<Movie> moviePosterArray) {
 
-            moviePosterPaths.addAll(moviePosterArray);
+            if (moviePosterArray != null)
+                moviePosterPaths.addAll(moviePosterArray);
+            else {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                alertDialog.setMessage("Some Problem Occurred");
+                alertDialog.setTitle("Failed");
+                alertDialog.setPositiveButton("Ok",
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                getActivity().finish();
+                            }
+                        });
+                alertDialog.setCancelable(true);
+                alertDialog.create().show();
+            }
+
             imageAdapter.notifyDataSetChanged();
 
         }
+    }
+
+    public boolean isOnline(Context context) {
+
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+
+        boolean isConnected = activeNetwork != null &&
+                activeNetwork.isConnectedOrConnecting();
+
+        return isConnected;
     }
 }
