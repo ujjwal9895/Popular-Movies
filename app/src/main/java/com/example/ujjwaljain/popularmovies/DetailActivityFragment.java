@@ -42,6 +42,8 @@ public class DetailActivityFragment extends Fragment {
 
     private ArrayList<String> mTrailers = new ArrayList<String>();
 
+    View mRootView;
+
     public DetailActivityFragment() {
     }
 
@@ -50,6 +52,8 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
+
+        mRootView = rootView;
 
         String movieJson = getActivity().getIntent().getExtras().getString("Json String");
         int position = getActivity().getIntent().getExtras().getInt("Position");
@@ -192,6 +196,16 @@ public class DetailActivityFragment extends Fragment {
 
             mTrailers.addAll(strings);
             Log.v(LOG_TAG, mTrailers.size() + "");
+
+            if (mTrailers.size() == 0)
+            {
+                mRecyclerView.setVisibility(View.GONE);
+                TextView trailer = (TextView) mRootView.findViewById(R.id.trailer);
+                trailer.setVisibility(View.GONE);
+                View line = (View) mRootView.findViewById(R.id.split_line_2);
+                line.setVisibility(View.GONE);
+
+            }
 
             mAdapter.notifyDataSetChanged();
         }
