@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +35,12 @@ public class DetailActivityFragment extends Fragment {
 
     private String[] movieDetails;
     private String trailerJsonString;
+
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
+    private ArrayList<String> mTrailers = new ArrayList<String>();
 
     public DetailActivityFragment() {
     }
@@ -82,6 +90,13 @@ public class DetailActivityFragment extends Fragment {
         releaseDateTextView.setText(movieDetails[3]);
         ratingTextView.setText(movieDetails[4]);
         overviewTextView.setText(movieDetails[5]);
+
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
+        mRecyclerView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mAdapter = new TrailerAdapter(getActivity(), mTrailers);
+        mRecyclerView.setAdapter(mAdapter);
 
         return rootView;
     }
@@ -138,12 +153,47 @@ public class DetailActivityFragment extends Fragment {
                 trailerJsonString = response.body().string();
 
                 Log.v(LOG_TAG, trailerJsonString);
+
+                trailerKey = getTrailersKeyFromJson(trailerJsonString);
+
+                return trailerKey;
             }
             catch (Exception e)
             {
                 Log.v(LOG_TAG, "Some problem occurred " + e.toString());
             }
+
             return null;
+        }
+
+        private ArrayList<String> getTrailersKeyFromJson(String trailerJson) throws JSONException
+        {
+            ArrayList<String> arrTrailer = new ArrayList<String>();
+
+            JSONObject trailer = new JSONObject(trailerJson);
+            JSONArray arrJson = trailer.getJSONArray("results");
+
+            for (int i = 0; i < arrJson.length(); i++)
+            {
+
+                JSONObject singleTrailer = arrJson.getJSONObject(i);
+                arrTrailer.add(singleTrailer.getString("key"));
+
+                Log.v(LOG_TAG, singleTrailer.getString("key"));
+
+            }
+
+            return arrTrailer;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> strings) {
+            super.onPostExecute(strings);
+
+            mTrailers.addAll(strings);
+            Log.v(LOG_TAG, mTrailers.size() + "");
+
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

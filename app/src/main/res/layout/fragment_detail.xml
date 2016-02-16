@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clipChildren="false"
@@ -93,10 +94,10 @@
     </LinearLayout>
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/overview_text"
-        android:id="@+id/movie_overview"
+        android:text="@string/overview"
+        android:id="@+id/overview"
         android:layout_below="@+id/rating_layout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
@@ -104,7 +105,90 @@
         android:layout_marginRight="@dimen/default_margin"
         android:gravity="center"
         android:lineSpacingMultiplier="1.15"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/split_line"
+        android:background="#a0a0a0"
+        android:layout_below="@+id/overview"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/overview_text"
+        android:id="@+id/movie_overview"
+        android:layout_below="@+id/overview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.15"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/trailers"
+        android:id="@+id/trailer"
+        android:layout_below="@+id/movie_overview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.15"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/split_line_2"
+        android:background="#a0a0a0"
+        android:layout_below="@+id/trailer"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="wrap_content"
+        android:layout_height="150dp"
+        android:id="@+id/recyclerView"
+        android:layout_below="@+id/split_line_2"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_centerHorizontal="true"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/reviews"
+        android:id="@+id/review"
+        android:layout_below="@+id/recyclerView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
+        android:gravity="center"
+        android:lineSpacingMultiplier="1.15"
+        android:textAppearance="@style/TextAppearance.AppCompat.Title"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:id="@+id/split_line_3"
+        android:background="#a0a0a0"
+        android:layout_below="@+id/review"
+        android:layout_marginTop="0dp"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"/>
 
 </RelativeLayout>
 </ScrollView>
