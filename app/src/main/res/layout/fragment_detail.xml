@@ -188,7 +188,17 @@
         android:layout_below="@+id/review"
         android:layout_marginTop="0dp"
         android:layout_marginLeft="30dp"
-        android:layout_marginRight="30dp"/>
+        android:layout_marginRight="30dp"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="wrap_content"
+        android:layout_height="500dp"
+        android:id="@+id/recyclerViewReviews"
+        android:layout_below="@id/split_line_3"
+        android:layout_marginTop="5dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
 
 </RelativeLayout>
 </ScrollView>

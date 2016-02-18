@@ -23,7 +23,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHold
 {
 
     private final String LOG_TAG = TrailerAdapter.class.getSimpleName();
-    private final TypedValue mTypedValue = new TypedValue();
     private ArrayList<String> arrTrailer;
     private Context mContext;
 

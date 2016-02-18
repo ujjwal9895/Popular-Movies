@@ -35,12 +35,18 @@ public class DetailActivityFragment extends Fragment {
 
     private String[] movieDetails;
     private String trailerJsonString;
+    private String reviewJsonString;
 
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
+    private RecyclerView mRecyclerViewReview;
+    private RecyclerView.Adapter mAdapterReview;
+    private RecyclerView.LayoutManager mLayoutManagerReview;
+
     private ArrayList<String> mTrailers = new ArrayList<String>();
+    private ArrayList<String> mReviews = new ArrayList<String>();
 
     View mRootView;
 
@@ -68,6 +74,9 @@ public class DetailActivityFragment extends Fragment {
 
         FetchTrailers fetchTrailers = new FetchTrailers();
         fetchTrailers.execute(movieDetails[6]);
+
+        FetchReviews fetchReviews = new FetchReviews();
+        fetchReviews.execute(movieDetails[6]);
 
         String posterUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[0];
         String backdropUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[1];
@@ -101,6 +110,13 @@ public class DetailActivityFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mAdapter = new TrailerAdapter(getActivity(), mTrailers);
         mRecyclerView.setAdapter(mAdapter);
+
+        mRecyclerViewReview = (RecyclerView) rootView.findViewById(R.id.recyclerViewReviews);
+        mRecyclerViewReview.setHasFixedSize(true);
+        mLayoutManagerReview = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
+        mRecyclerViewReview.setLayoutManager(mLayoutManagerReview);
+        mAdapterReview = new ReviewAdapter(getActivity(), mReviews);
+        mRecyclerViewReview.setAdapter(mAdapterReview);
 
         return rootView;
     }
@@ -208,6 +224,88 @@ public class DetailActivityFragment extends Fragment {
             }
 
             mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    public class FetchReviews extends AsyncTask<String, Void, ArrayList<String>>
+    {
+
+        private String LOG_TAG = FetchReviews.class.getSimpleName();
+
+        @Override
+        protected ArrayList<String> doInBackground(String... params) {
+
+            OkHttpClient client = new OkHttpClient();
+            ArrayList<String> reviewKey;
+
+            try {
+
+                String baseUrl = "http://api.themoviedb.org/3/movie/" + params[0] + "/reviews?";
+
+                Uri uri = Uri.parse(baseUrl).buildUpon()
+                        .appendQueryParameter("api_key", BuildConfig.MOVIE_DB_API_KEY)
+                        .build();
+
+                URL url = new URL(uri.toString());
+
+                Log.v(LOG_TAG, url.toString());
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .build();
+
+                Response response = client.newCall(request).execute();
+
+                reviewJsonString = response.body().string();
+
+                Log.v(LOG_TAG, reviewJsonString);
+
+                reviewKey = getReviewsKeyFromJson(reviewJsonString);
+
+                return reviewKey;
+            }
+            catch (Exception e)
+            {
+                Log.v(LOG_TAG, "Exception occurred " + e);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<String> strings) {
+            super.onPostExecute(strings);
+            mReviews.addAll(strings);
+
+            if (mReviews.size() == 0)
+            {
+                mRecyclerViewReview.setVisibility(View.GONE);
+                TextView review = (TextView) mRootView.findViewById(R.id.review);
+                review.setVisibility(View.GONE);
+                View split_line = (View) mRootView.findViewById(R.id.split_line_3);
+                split_line.setVisibility(View.GONE);
+
+            }
+
+            mAdapterReview.notifyDataSetChanged();
+        }
+
+        private ArrayList<String> getReviewsKeyFromJson(String reviewJson) throws JSONException
+        {
+
+            ArrayList<String> arrReview = new ArrayList<String>();
+
+            JSONObject review = new JSONObject(reviewJson);
+            JSONArray arrJson = review.getJSONArray("results");
+
+            for (int i =0; i < arrJson.length(); i++)
+            {
+
+                JSONObject singleReview = arrJson.getJSONObject(i);
+                arrReview.add(singleReview.getString("content"));
+                arrReview.add(singleReview.getString("author"));
+            }
+
+            return arrReview;
         }
     }
 }
