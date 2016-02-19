@@ -200,5 +200,13 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"/>
 
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/fab"
+        android:layout_marginTop="170dp"
+        android:layout_marginLeft="280dp"
+        android:src="@drawable/star_outline"/>
+
 </RelativeLayout>
 </ScrollView>

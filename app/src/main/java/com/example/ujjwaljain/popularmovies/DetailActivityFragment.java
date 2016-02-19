@@ -3,6 +3,7 @@ package com.example.ujjwaljain.popularmovies;
 import android.app.DownloadManager;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -117,6 +118,14 @@ public class DetailActivityFragment extends Fragment {
         mRecyclerViewReview.setLayoutManager(mLayoutManagerReview);
         mAdapterReview = new ReviewAdapter(getActivity(), mReviews);
         mRecyclerViewReview.setAdapter(mAdapterReview);
+
+        final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fab.setImageResource(R.drawable.star);
+            }
+        });
 
         return rootView;
     }
