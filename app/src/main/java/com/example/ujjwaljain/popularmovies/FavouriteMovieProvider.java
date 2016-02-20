@@ -11,11 +11,11 @@ import net.simonvt.schematic.annotation.TableEndpoint;
  * Created by Ujjwal Jain on 19-02-2016.
  */
 
-@ContentProvider(authority = FavouriteMovieProvider.AUTHORITY, database = FavouriteMovieDatabase.class)
+@ContentProvider(authority = FavouriteMovieProvider.AUTHORITY, database = FavouriteMovieDatabase.class, packageName = "com.example.ujjwaljain.popularmovies.provider")
 public class FavouriteMovieProvider {
 
     public static final String AUTHORITY =
-            "com.example.ujjwaljain.popularmovies.data.FavouriteMovieProvider";
+            "com.example.ujjwaljain.popularmovies.favouritemovieprovider";
 
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + AUTHORITY);
 
@@ -36,7 +36,7 @@ public class FavouriteMovieProvider {
 
         @ContentUri(
                 path = Path.FAVOURITE_MOVIES,
-                type = "vnd.android.cursor.dir/favourite_movie",
+                type = "vnd.android.cursor.dir/favourite_movies",
                 defaultSort = FavouriteMovieColumns._ID + " ASC")
 
         public static final Uri CONTENT_URI = buildUri(Path.FAVOURITE_MOVIES);
@@ -44,11 +44,11 @@ public class FavouriteMovieProvider {
         @InexactContentUri(
                 name = "FavouriteMovies_ID",
                 path = Path.FAVOURITE_MOVIES + "/#",
-                type = "vnd.android.cursor.item/favourite_movie",
-                whereColumn = FavouriteMovieColumns._ID,
+                type = "vnd.android.cursor.item/favourite_movies",
+                whereColumn = FavouriteMovieColumns.MOVIE_ID,
                 pathSegment = 1)
 
-        public static Uri withId(long id){
+        public static Uri withId(String id){
             return buildUri(Path.FAVOURITE_MOVIES, String.valueOf(id));
         }
 

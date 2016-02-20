@@ -30,6 +30,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="MainActivity" />
         </activity>
+
+
+        <provider
+            android:authorities="com.example.ujjwaljain.popularmovies.favouritemovieprovider"
+            android:name="com.example.ujjwaljain.popularmovies.provider.FavouriteMovieProvider"
+            android:exported="true"/>
+
     </application>
+
+
 
 </manifest>

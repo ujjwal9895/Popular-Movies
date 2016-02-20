@@ -7,7 +7,7 @@ import net.simonvt.schematic.annotation.Table;
  * Created by Ujjwal Jain on 19-02-2016.
  */
 
-@Database(version = FavouriteMovieDatabase.VERSION)
+@Database(version = FavouriteMovieDatabase.VERSION, packageName = "com.example.ujjwaljain.popularmovies.provider")
 public class FavouriteMovieDatabase {
 
     private FavouriteMovieDatabase(){}

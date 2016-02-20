@@ -1,11 +1,18 @@
 package com.example.ujjwaljain.popularmovies;
 
 import android.app.DownloadManager;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -14,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
@@ -24,13 +32,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
@@ -49,9 +58,31 @@ public class DetailActivityFragment extends Fragment {
     private ArrayList<String> mTrailers = new ArrayList<String>();
     private ArrayList<String> mReviews = new ArrayList<String>();
 
+    boolean favMovie = false;
+
     View mRootView;
 
     public DetailActivityFragment() {
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        return new CursorLoader(getActivity(), FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
     }
 
     @Override
@@ -82,8 +113,8 @@ public class DetailActivityFragment extends Fragment {
         String posterUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[0];
         String backdropUrl = "http://image.tmdb.org/t/p/w342/" + movieDetails[1];
 
-        ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
-        ImageView backdropImageView = (ImageView) rootView.findViewById(R.id.backdrop);
+        final ImageView posterImageView = (ImageView) rootView.findViewById(R.id.poster);
+        final ImageView backdropImageView = (ImageView) rootView.findViewById(R.id.backdrop);
 
         Picasso.with(getActivity())
                 .load(posterUrl)
@@ -120,14 +151,71 @@ public class DetailActivityFragment extends Fragment {
         mRecyclerViewReview.setAdapter(mAdapterReview);
 
         final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
+
+        favMovie = isFavourite(movieDetails[6]);
+        if (favMovie)
+        {
+            fab.setImageResource(R.drawable.star);
+        }
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fab.setImageResource(R.drawable.star);
+
+                if (favMovie) {
+                    fab.setImageResource(R.drawable.star_outline);
+                    getActivity().getContentResolver().delete(FavouriteMovieProvider.FavouriteMovies.withId(movieDetails[6]),
+                            null, null);
+                    Toast.makeText(getActivity(), "Removed from favourites", Toast.LENGTH_SHORT).show();
+                }
+                else {
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+                    Bitmap backdropImg = ((BitmapDrawable) backdropImageView.getDrawable())
+                            .getBitmap();
+                    backdropImg.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] backdropByte = baos.toByteArray();
+
+                    Bitmap posterImg = ((BitmapDrawable) posterImageView.getDrawable())
+                            .getBitmap();
+                    posterImg.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    byte[] posterByte = baos.toByteArray();
+
+
+                    fab.setImageResource(R.drawable.star);
+                    ContentValues cv = new ContentValues();
+                    cv.put(FavouriteMovieColumns.MOVIE_ID, movieDetails[6]);
+                    cv.put(FavouriteMovieColumns.BACKDROP, backdropByte);
+                    cv.put(FavouriteMovieColumns.POSTER, posterByte);
+                    cv.put(FavouriteMovieColumns.TITLE, movieDetails[2]);
+                    cv.put(FavouriteMovieColumns.DATE, movieDetails[3]);
+                    cv.put(FavouriteMovieColumns.RATING, movieDetails[4]);
+                    cv.put(FavouriteMovieColumns.OVERVIEW, movieDetails[5]);
+
+                    getActivity().getContentResolver().insert(FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                            cv);
+
+                    Toast.makeText(getActivity(), "Added to Favourites", Toast.LENGTH_SHORT).show();
+                }
+
+                favMovie = !favMovie;
             }
         });
 
         return rootView;
+    }
+
+    public boolean isFavourite(String movieId)
+    {
+        String[] selectionArgs = { movieId };
+        Cursor c = getActivity().getContentResolver().query(FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                null, FavouriteMovieColumns.MOVIE_ID + " = ?", selectionArgs, null);
+
+        if (c==null || c.getCount() == 0)
+            return false;
+        else
+            return true;
     }
 
     public String[] getImagePathsFromJson(String jsonStr, int position) throws JSONException {

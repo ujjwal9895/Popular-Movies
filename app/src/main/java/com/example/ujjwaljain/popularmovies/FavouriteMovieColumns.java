@@ -31,4 +31,7 @@ public interface FavouriteMovieColumns {
 
     @DataType(DataType.Type.REAL) @NotNull
     public static final String RATING = "rating";
+
+    @DataType(DataType.Type.TEXT)
+    public static final String OVERVIEW = "overview";
 }
