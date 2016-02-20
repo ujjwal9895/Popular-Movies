@@ -5,6 +5,7 @@ import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -53,6 +54,7 @@ public class MainActivityFragment extends Fragment {
     private final String STATE_MOVIES = "state_movies";
     private final String SORT_CRITERIA = "sort_criteria";
     private final String SAVED_STRING = "json_string";
+    private boolean fromFavourite = false;
 
     public MainActivityFragment() {
     }
@@ -108,6 +110,7 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.action_sort_popularity) {
 
             sortOrder = "popularity.desc";
+            fromFavourite = false;
             updateMovies();
             return true;
 
@@ -116,13 +119,47 @@ public class MainActivityFragment extends Fragment {
         if (id == R.id.action_sort_rating) {
 
             sortOrder = "vote_average.desc";
+            fromFavourite = false;
             updateMovies();
             return true;
 
         }
 
+        if (id == R.id.action_sort_favourite)
+        {
+            fromFavourite = true;
+            getFavouriteMoviesFromDatabase();
+            return true;
+        }
+
         return super.onOptionsItemSelected(item);
 
+    }
+
+    public void getFavouriteMoviesFromDatabase()
+    {
+        moviePosterPaths.clear();
+
+        Cursor cursor = getActivity().getContentResolver().query(
+                FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor != null && cursor.moveToFirst()) {
+
+            do {
+
+                Movie favMovie = new Movie(cursor.getString(cursor.getColumnIndex(FavouriteMovieColumns.POSTER)));
+                moviePosterPaths.add(favMovie);
+            } while (cursor.moveToNext());
+
+            cursor.close();
+        }
+
+        imageAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -159,12 +196,43 @@ public class MainActivityFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), DetailActivity.class);
                 intent.putExtra("Json String", movieJsonString);
                 intent.putExtra("Position", position);
+                intent.putExtra("FromFavourite", fromFavourite);
+
+                if (fromFavourite) {
+                    try {
+                        intent.putExtra("MovieId", getMovieIdFromJson(position));
+                    } catch (Exception e) {
+                        Log.v("Error", "Some exception occurred " + e);
+                    }
+                } else
+                    intent.putExtra("MovieId", "");
+
                 startActivity(intent);
 
             }
         });
 
         return rootView;
+    }
+
+    private String getMovieIdFromJson(int pos)
+    {
+        Cursor cursor = getActivity().getContentResolver().query(
+                FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                null,
+                null,
+                null,
+                null
+        );
+
+        if (cursor!= null && cursor.getCount() > pos) {
+            cursor.moveToPosition(pos);
+
+            String id = cursor.getString(cursor.getColumnIndex(FavouriteMovieColumns.MOVIE_ID));
+            cursor.close();
+            return id;
+        }
+        return null;
     }
 
     @Override

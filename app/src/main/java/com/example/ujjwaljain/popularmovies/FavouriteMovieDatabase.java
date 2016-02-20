@@ -12,7 +12,7 @@ public class FavouriteMovieDatabase {
 
     private FavouriteMovieDatabase(){}
 
-    public static final int VERSION = 1;
+    public static final int VERSION = 4;
 
     @Table(FavouriteMovieColumns.class) public static final String FAVOURITE_MOVIES = "favourite_movies";
 

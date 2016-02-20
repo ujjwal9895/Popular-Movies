@@ -14,13 +14,13 @@ public interface FavouriteMovieColumns {
     @AutoIncrement
     public static final String _ID = "_id";
 
-    @DataType(DataType.Type.INTEGER) @NotNull
+    @DataType(DataType.Type.TEXT) @NotNull
     public static final String MOVIE_ID = "movie_id";
 
-    @DataType(DataType.Type.BLOB)
+    @DataType(DataType.Type.TEXT)
     public static final String BACKDROP = "backdrop";
 
-    @DataType(DataType.Type.BLOB)
+    @DataType(DataType.Type.TEXT)
     public static final String POSTER = "poster";
 
     @DataType(DataType.Type.TEXT) @NotNull
@@ -29,7 +29,7 @@ public interface FavouriteMovieColumns {
     @DataType(DataType.Type.TEXT) @NotNull
     public static final String DATE = "date";
 
-    @DataType(DataType.Type.REAL) @NotNull
+    @DataType(DataType.Type.TEXT) @NotNull
     public static final String RATING = "rating";
 
     @DataType(DataType.Type.TEXT)

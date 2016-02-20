@@ -1,10 +1,15 @@
 package com.example.ujjwaljain.popularmovies;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
 import android.net.Uri;
 
 import net.simonvt.schematic.annotation.ContentProvider;
 import net.simonvt.schematic.annotation.ContentUri;
 import net.simonvt.schematic.annotation.InexactContentUri;
+import net.simonvt.schematic.annotation.NotifyDelete;
+import net.simonvt.schematic.annotation.NotifyInsert;
 import net.simonvt.schematic.annotation.TableEndpoint;
 
 /**
@@ -51,6 +56,5 @@ public class FavouriteMovieProvider {
         public static Uri withId(String id){
             return buildUri(Path.FAVOURITE_MOVIES, String.valueOf(id));
         }
-
     }
 }

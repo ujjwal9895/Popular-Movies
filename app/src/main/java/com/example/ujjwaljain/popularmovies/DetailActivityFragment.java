@@ -95,13 +95,22 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         String movieJson = getActivity().getIntent().getExtras().getString("Json String");
         int position = getActivity().getIntent().getExtras().getInt("Position");
+        boolean fromFav = getActivity().getIntent().getExtras().getBoolean("FromFavourite");
 
-        try {
+        if (fromFav)
+        {
+            String movie_id = getActivity().getIntent().getExtras().getString("MovieId");
 
-            Log.v(LOG_TAG, movieJson);
-            movieDetails = getImagePathsFromJson(movieJson, position);
-        } catch (Exception e) {
-            Log.e(LOG_TAG, "Error getting string", e);
+            movieDetails = FetchDetails(movie_id);
+        }
+        else {
+            try {
+
+                Log.v(LOG_TAG, movieJson);
+                movieDetails = getImagePathsFromJson(movieJson, position);
+            } catch (Exception e) {
+                Log.e(LOG_TAG, "Error getting string", e);
+            }
         }
 
         FetchTrailers fetchTrailers = new FetchTrailers();
@@ -170,24 +179,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 }
                 else {
 
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                    Bitmap backdropImg = ((BitmapDrawable) backdropImageView.getDrawable())
-                            .getBitmap();
-                    backdropImg.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] backdropByte = baos.toByteArray();
-
-                    Bitmap posterImg = ((BitmapDrawable) posterImageView.getDrawable())
-                            .getBitmap();
-                    posterImg.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                    byte[] posterByte = baos.toByteArray();
-
-
                     fab.setImageResource(R.drawable.star);
                     ContentValues cv = new ContentValues();
                     cv.put(FavouriteMovieColumns.MOVIE_ID, movieDetails[6]);
-                    cv.put(FavouriteMovieColumns.BACKDROP, backdropByte);
-                    cv.put(FavouriteMovieColumns.POSTER, posterByte);
+                    cv.put(FavouriteMovieColumns.BACKDROP, movieDetails[1]);
+                    cv.put(FavouriteMovieColumns.POSTER, movieDetails[0]);
                     cv.put(FavouriteMovieColumns.TITLE, movieDetails[2]);
                     cv.put(FavouriteMovieColumns.DATE, movieDetails[3]);
                     cv.put(FavouriteMovieColumns.RATING, movieDetails[4]);
@@ -214,8 +210,40 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         if (c==null || c.getCount() == 0)
             return false;
-        else
+        else {
+            c.moveToFirst();
+            Log.v(LOG_TAG, c.getString(c.getColumnIndex(FavouriteMovieColumns.TITLE)) + movieId);
             return true;
+        }
+    }
+
+    public String[] FetchDetails(String movieId)
+    {
+        String[] resultStr = new String[7];
+
+        String[] selectionArgs = { movieId };
+        Cursor c = getActivity().getContentResolver().query(FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
+                null, FavouriteMovieColumns.MOVIE_ID + " = ?", selectionArgs, null);
+
+        if (c==null || c.getCount()==0)
+            Log.v(LOG_TAG, "No data available");
+        else {
+            c.moveToFirst();
+
+            resultStr[0] = c.getString(c.getColumnIndex(FavouriteMovieColumns.POSTER));
+            resultStr[1] = c.getString(c.getColumnIndex(FavouriteMovieColumns.BACKDROP));
+            resultStr[2] = c.getString(c.getColumnIndex(FavouriteMovieColumns.TITLE));
+            resultStr[3] = c.getString(c.getColumnIndex(FavouriteMovieColumns.DATE));
+            resultStr[4] = c.getString(c.getColumnIndex(FavouriteMovieColumns.RATING));
+            resultStr[5] = c.getString(c.getColumnIndex(FavouriteMovieColumns.OVERVIEW));
+
+        }
+
+        resultStr[6] = movieId;
+
+        c.close();
+
+        return resultStr;
     }
 
     public String[] getImagePathsFromJson(String jsonStr, int position) throws JSONException {
@@ -259,8 +287,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
                 URL url = new URL(uri.toString());
 
-                Log.v(LOG_TAG, url.toString());
-
                 Request request = new Request.Builder()
                         .url(url)
                         .build();
@@ -268,8 +294,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 Response response = client.newCall(request).execute();
 
                 trailerJsonString = response.body().string();
-
-                Log.v(LOG_TAG, trailerJsonString);
 
                 trailerKey = getTrailersKeyFromJson(trailerJsonString);
 
@@ -296,8 +320,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 JSONObject singleTrailer = arrJson.getJSONObject(i);
                 arrTrailer.add(singleTrailer.getString("key"));
 
-                Log.v(LOG_TAG, singleTrailer.getString("key"));
-
             }
 
             return arrTrailer;
@@ -308,7 +330,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             super.onPostExecute(strings);
 
             mTrailers.addAll(strings);
-            Log.v(LOG_TAG, mTrailers.size() + "");
 
             if (mTrailers.size() == 0)
             {
@@ -345,8 +366,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
                 URL url = new URL(uri.toString());
 
-                Log.v(LOG_TAG, url.toString());
-
                 Request request = new Request.Builder()
                         .url(url)
                         .build();
@@ -354,8 +373,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                 Response response = client.newCall(request).execute();
 
                 reviewJsonString = response.body().string();
-
-                Log.v(LOG_TAG, reviewJsonString);
 
                 reviewKey = getReviewsKeyFromJson(reviewJsonString);
 
