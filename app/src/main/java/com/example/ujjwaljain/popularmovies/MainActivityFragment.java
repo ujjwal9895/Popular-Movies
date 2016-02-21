@@ -59,6 +59,10 @@ public class MainActivityFragment extends Fragment {
     public MainActivityFragment() {
     }
 
+    public interface Callback {
+        public void onItemSelected(String json, int position, boolean fromFav, String movie_id);
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -193,21 +197,34 @@ public class MainActivityFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getActivity(), DetailActivity.class);
-                intent.putExtra("Json String", movieJsonString);
-                intent.putExtra("Position", position);
-                intent.putExtra("FromFavourite", fromFavourite);
+                String mvId = "";
 
                 if (fromFavourite) {
                     try {
-                        intent.putExtra("MovieId", getMovieIdFromJson(position));
+                        mvId = getMovieIdFromJson(position);
+
+                        if (mvId == null){
+                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
+                            alertDialog.setMessage("Some Problem Occurred");
+                            alertDialog.setTitle("Failed");
+                            alertDialog.setPositiveButton("Ok",
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            getActivity().finish();
+                                        }
+                                    });
+                            alertDialog.setCancelable(true);
+                            alertDialog.create().show();
+
+                        }
                     } catch (Exception e) {
                         Log.v("Error", "Some exception occurred " + e);
                     }
                 } else
-                    intent.putExtra("MovieId", "");
+                    mvId = "";
 
-                startActivity(intent);
+                ((Callback) getActivity()).onItemSelected(movieJsonString, position, fromFavourite, mvId);
 
             }
         });

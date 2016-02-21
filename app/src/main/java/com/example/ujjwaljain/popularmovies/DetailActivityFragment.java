@@ -2,11 +2,13 @@ package com.example.ujjwaljain.popularmovies;
 
 import android.app.DownloadManager;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -20,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +44,7 @@ import java.util.ArrayList;
  */
 public class DetailActivityFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private String LOG_TAG = DetailActivityFragment.class.getSimpleName();
+    public String LOG_TAG = DetailActivityFragment.class.getSimpleName();
 
     private String[] movieDetails;
     private String trailerJsonString;
@@ -68,6 +71,11 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
+        Intent intent = getActivity().getIntent();
+
+        if (intent == null || intent.getData() == null)
+            return null;
+
         return new CursorLoader(getActivity(), FavouriteMovieProvider.FavouriteMovies.CONTENT_URI,
                 null,
                 null,
@@ -93,25 +101,33 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
 
         mRootView = rootView;
 
-        String movieJson = getActivity().getIntent().getExtras().getString("Json String");
-        int position = getActivity().getIntent().getExtras().getInt("Position");
-        boolean fromFav = getActivity().getIntent().getExtras().getBoolean("FromFavourite");
+        Bundle args = getArguments();
 
-        if (fromFav)
-        {
-            String movie_id = getActivity().getIntent().getExtras().getString("MovieId");
+        if (args != null) {
+            String movieJson = args.getString("Json String");
+            int position = args.getInt("Position");
+            boolean fromFav = args.getBoolean("FromFavourite");
 
-            movieDetails = FetchDetails(movie_id);
-        }
-        else {
-            try {
+            if (fromFav) {
+                String movie_id = args.getString("MovieId");
 
-                Log.v(LOG_TAG, movieJson);
-                movieDetails = getImagePathsFromJson(movieJson, position);
-            } catch (Exception e) {
-                Log.e(LOG_TAG, "Error getting string", e);
+                if (movie_id == null)
+                    return null;
+
+                movieDetails = FetchDetails(movie_id);
+            } else {
+                try {
+
+                    Log.v(LOG_TAG, movieJson);
+                    movieDetails = getImagePathsFromJson(movieJson, position);
+                } catch (Exception e) {
+                    Log.e(LOG_TAG, "Error getting string", e);
+                }
             }
         }
+        else
+            return null;
+
 
         FetchTrailers fetchTrailers = new FetchTrailers();
         fetchTrailers.execute(movieDetails[6]);
@@ -162,8 +178,7 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
         final FloatingActionButton fab = (FloatingActionButton) rootView.findViewById(R.id.fab);
 
         favMovie = isFavourite(movieDetails[6]);
-        if (favMovie)
-        {
+        if (favMovie) {
             fab.setImageResource(R.drawable.star);
         }
 
@@ -176,8 +191,8 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
                     getActivity().getContentResolver().delete(FavouriteMovieProvider.FavouriteMovies.withId(movieDetails[6]),
                             null, null);
                     Toast.makeText(getActivity(), "Removed from favourites", Toast.LENGTH_SHORT).show();
-                }
-                else {
+
+                } else {
 
                     fab.setImageResource(R.drawable.star);
                     ContentValues cv = new ContentValues();
