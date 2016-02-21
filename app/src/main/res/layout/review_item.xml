@@ -7,9 +7,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/authorName"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginTop="@dimen/default_margin_top"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
         android:text="Author Name"
         android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionMode.Subtitle"/>
 
@@ -19,7 +19,7 @@
         android:id="@+id/split_line_4"
         android:background="#a0a0a0"
         android:layout_below="@+id/authorName"
-        android:layout_marginLeft="20dp"
+        android:layout_marginLeft="@dimen/default_margin"
         android:layout_marginRight="50dp"
         android:layout_marginTop="0dp"/>
 
@@ -28,8 +28,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/reviewTxt"
         android:layout_marginTop="3dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
         android:text="A funny movie with a romantic love story.\r\n\r\nWade Wilson (Ryan Reynolds) is a former Special Forces operative who now works as a mercenary. His world comes crashing down when evil scientist Ajax (Ed Skrein) tortures, disfigures and transforms him into Deadpool. \r\n\r\nThe rogue experiment leaves Deadpool with accelerated healing powers and a twisted sense of humor. With help from mutant allies Colossus and Negasonic Teenage Warhead (Brianna Hildebrand), Deadpool uses his new skills to hunt down the man who nearly destroyed his life."
         android:lineSpacingMultiplier="1.15"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"/>

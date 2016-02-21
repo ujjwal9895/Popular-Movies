@@ -14,9 +14,7 @@ import java.util.ArrayList;
  */
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder> {
 
-    private final String LOG_TAG = ReviewAdapter.class.getSimpleName();
     private ArrayList<String> arrReview;
-    private Context mContext;
 
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
@@ -35,7 +33,6 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ViewHolder
 
     public ReviewAdapter(Context context, ArrayList<String> myReviews) {
 
-        mContext = context;
         arrReview = myReviews;
     }
 

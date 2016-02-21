@@ -57,7 +57,7 @@
         android:layout_below="@+id/movie_title"
         android:layout_alignLeft="@+id/movie_title"
         android:layout_alignStart="@+id/movie_title"
-        android:layout_marginTop="5dp"
+        android:layout_marginTop="@dimen/default_margin_top"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"/>
 
     <LinearLayout
@@ -87,7 +87,7 @@
                 android:layout_height="wrap_content"
                 android:text="/10"
                 android:id="@+id/total_rating"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="@dimen/default_margin_top"
                 android:textAppearance="@style/TextAppearance.AppCompat.Body1"
                 android:layout_below="@+id/releaseDate"
                 android:textColor="?android:attr/textColorSecondary"/>
@@ -161,9 +161,9 @@
         android:layout_height="150dp"
         android:id="@+id/recyclerView"
         android:layout_below="@+id/split_line_2"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_marginTop="@dimen/default_margin_top"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"
         android:layout_centerHorizontal="true"
         />
 
@@ -197,9 +197,9 @@
         android:layout_height="500dp"
         android:id="@+id/recyclerViewReviews"
         android:layout_below="@id/split_line_3"
-        android:layout_marginTop="5dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"/>
+        android:layout_marginTop="@dimen/default_margin_top"
+        android:layout_marginLeft="@dimen/default_margin"
+        android:layout_marginRight="@dimen/default_margin"/>
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"

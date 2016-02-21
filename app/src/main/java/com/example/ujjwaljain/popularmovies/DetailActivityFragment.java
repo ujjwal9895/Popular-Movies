@@ -118,7 +118,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             } else {
                 try {
 
-                    Log.v(LOG_TAG, movieJson);
                     movieDetails = getImagePathsFromJson(movieJson, position);
                 } catch (Exception e) {
                     Log.e(LOG_TAG, "Error getting string", e);
@@ -227,7 +226,6 @@ public class DetailActivityFragment extends Fragment implements LoaderManager.Lo
             return false;
         else {
             c.moveToFirst();
-            Log.v(LOG_TAG, c.getString(c.getColumnIndex(FavouriteMovieColumns.TITLE)) + movieId);
             return true;
         }
     }
